@@ -1,0 +1,50 @@
+%%Identification
+%%The package identifies itself and the LaTeX version needed
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{my_macros}[2014/08/21 Example package]
+
+%%Requeiried packages and preliminary definitions, needed by the options
+\RequirePackage{amssymb, amsmath, amsthm, mathtools, mathrsfs, witharrows}
+
+
+%%This parts handles the options passed to the package.
+\DeclareOption*{\PackageWarning{examplepackage}{Unknown ‘\CurrentOption’}}
+\ProcessOptions\relax
+
+%%Body of the package, most of the declarations appear here.
+
+%% Inner Product
+\newcommand{\inp}[2]{\left\langle #1, #2 \right\rangle}
+
+
+%% Norm
+\newcommand{\norm}[1]{\left\| #1 \right\|}
+
+
+%% Correct Brackets
+\newcommand{\bracs}[1]{\left( #1 \right)}
+
+
+%% Expected Value
+\newcommand{\expv}[1]{\mathbb{E}\left[ #1 \right]}
+
+
+%% log mit passenden Klammern
+\newcommand{\mylog}[1]{\log\left( #1 \right)}
+
+
+%% Operator Norm with Max
+\newcommand{\opnorm}[2]{ \underset{\norm{#2}=1}{max} \frac{\norm{#1#2}}{\norm{#2}} }
+
+
+
+%% Arrow Equation Environment
+\newcounter{aeqcounter}[section]
+\renewcommand{\theaeqcounter}{\thesection.\arabic{aeqcounter}}
+
+\newenvironment{arrowEquation}
+{\refstepcounter{aeqcounter}
+	\begin{DispWithArrows*}[displaystyle, fleqn, wrap-lines, tikz = {align = flush left}, interline=3mm]
+		}
+		{\end{DispWithArrows*}}
+
