@@ -34,16 +34,16 @@ background_opacity: 0.65
 
 font:
   normal:
-    family: "Hack Nerd Font"
+    family: "Iosevka"
     style: Regular
   bold:
-    family: "Hack Nerd Font"
+    family: "Iosevka"
     style: Bold
   italic:
-    family: "Hack Nerd Font"
+    family: "Iosevka"
     style: Italic
   bold_italic:
-    family: "Hack Nerd Font"
+    family: "Iosevka"
     style: Bold Italic
 
 
