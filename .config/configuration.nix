@@ -50,10 +50,9 @@
     wget
     vim
     git
-    chromium
+    htop
     alacritty
     google-chrome
-    chrome-gnome-shell
     vscode
     emacs
     ripgrep
@@ -62,21 +61,9 @@
     tdesktop
     dmenu
     nixfmt
-    haskellPackages.brittany
-    nerdfonts
     iosevka
-    pkgs.xfce.xfce4-whiskermenu-plugin
-    pkgs.xfce.xfce4-icon-theme
-    pkgs.xfce.xfwm4-themes
-    arc-theme
-    papirus-icon-theme
-    plano-theme
-    amber-theme
-    numix-gtk-theme
-    numix-cursor-theme
-    zuki-themes
-    stilo-themes
-    capitaine-cursors
+    wmctrl
+    feh
   ];
 
   # Enable sound.
@@ -84,47 +71,51 @@
   hardware.pulseaudio.enable = true;
 
   # Enable the X11 windowing system.
+  services = {
 
-  services.xserver = {
-
-    enable = true;
-    layout = "de";
-    videoDrivers = [ "nvidia" ];
-
-    # Desktop Manager Settings
-    desktopManager = {
-
-      xterm.enable = false;
-
-      # XFCE Settings
-      xfce = {
-        enable = true;
-        enableXfwm = false;
-      };
+    # Compositor Settings
+    picom = {
+      enable = true;
+      shadow = true;
+      inactiveOpacity = "1";
+      backend = "glx";
+      menuOpacity = "1";
+      vSync = true;
     };
+    xserver = {
 
-    # Window Manager Settings
-    windowManager = {
+      enable = true;
+      layout = "de";
+      videoDrivers = [ "nvidia" ];
 
-      xmonad = {
+      # Desktop Manager Settings
+      desktopManager = {
 
-        enable = true;
-        enableContribAndExtras = true;
-        extraPackages = haskellPackages: [
-          haskellPackages.xmonad-contrib
-          haskellPackages.xmonad-extras
-          haskellPackages.xmonad
-          haskellPackages.brittany
-          haskellPackages.dbus
-        ];
+        xterm.enable = false;
+
+        # Window Manager Selection
+        plasma5 = {
+          enable = true;
+          #enableXfwm = false;
+        };
       };
-    };
 
-    # Display Manager Settings
-    displayManager = {
+      # Window Manager Settings
+      windowManager = {
 
-      lightdm.enable = true;
-      defaultSession = "xfce+xmonad";
+        i3 = {
+          enable = true;
+          package = pkgs.i3-gaps;
+          extraPackages = with pkgs; [ dmenu i3status ];
+        };
+      };
+
+      # Display Manager Settings
+      displayManager = {
+
+        sddm.enable = true;
+        defaultSession = "plasma5+i3";
+      };
     };
   };
 
@@ -135,7 +126,7 @@
       [ "wheel" "vboxusers" "networkmanager" ]; # Enable ‘sudo’ for the user.
   };
 
-  fonts.fonts = with pkgs; [ nerdfonts iosevka ];
+  fonts.fonts = with pkgs; [ iosevka ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
