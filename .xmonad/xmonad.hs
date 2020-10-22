@@ -1,7 +1,7 @@
 import           XMonad
 
 import           XMonad.Hooks.EwmhDesktops
-import           XMonad.Config.Xfce
+import           XMonad.Config.Kde
 import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Util.Run                ( spawnPipe )
@@ -412,16 +412,31 @@ myLayoutHook =
 
 
 ------------------------------------------------------------------------
+-- ManageHook
+------------------------------------------------------------------------
+myManageHook = composeAll
+  [ className =? "plasma" --> doFloat
+  , className =? "Plasma" --> doFloat
+  , className =? "plasma-desktop" --> doFloat
+  , className =? "Plasma-desktop" --> doFloat
+  , className =? "krunner" --> doIgnore >> doFloat
+  , className =? "ksplashsimple" --> doFloat
+  , className =? "ksplashqml" --> doFloat
+  , className =? "ksplashx" --> doFloat
+  ]
+
+
 
 main = do
   xmonad
-    $ xfceConfig { manageHook         = manageDocks <+> manageHook xfceConfig
-                 , layoutHook         = myLayoutHook
-                 , modMask            = mod4Mask     -- Rebind Mod to the Windows key
-                 , terminal           = "alacritty"
-                 , startupHook        = myStartupHook
-                 , borderWidth        = myBorderWidth
-                 , normalBorderColor  = myNormColor
-                 , focusedBorderColor = myFocusColor
-                 }
+    $                 kde4Config
+                        { manageHook = manageDocks <+> myManageHook <+> manageHook kde4Config
+                        , layoutHook         = myLayoutHook
+                        , modMask            = mod4Mask     -- Rebind Mod to the Windows key
+                        , terminal           = "alacritty"
+                        , startupHook        = myStartupHook
+                        , borderWidth        = myBorderWidth
+                        , normalBorderColor  = myNormColor
+                        , focusedBorderColor = myFocusColor
+                        }
     `additionalKeysP` myKeys
