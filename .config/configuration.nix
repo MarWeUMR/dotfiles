@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
 
@@ -23,15 +23,13 @@
     };
   };
 
-  networking.hostName = "nixos"; # Define your hostname.
-  networking.networkmanager.enable = true;
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking.useDHCP = false;
-  networking.interfaces.enp2s0.useDHCP = true;
+  networking = {
+    hostName = "nixos"; # Define your hostname.
+    networkmanager.enable = true;
+    useDHCP = false;
+    interfaces.enp2s0.useDHCP = true;
+    enableIPv6 = false;
+  };
 
   # Select internationalisation properties.
   i18n.defaultLocale = "de_DE.UTF-8";
@@ -51,6 +49,7 @@
     vim
     git
     htop
+    unzip
     alacritty
     google-chrome
     vscode
@@ -64,6 +63,13 @@
     iosevka
     wmctrl
     feh
+    shutter
+    kdeconnect
+    plasma-browser-integration
+    plasma-integration
+    dropbox-cli
+    zsh
+    oh-my-zsh
   ];
 
   # Enable sound.
@@ -77,10 +83,15 @@
     picom = {
       enable = true;
       shadow = true;
-      inactiveOpacity = "1";
+      inactiveOpacity = "1.0";
       backend = "glx";
       menuOpacity = "1";
       vSync = true;
+      settings = {
+        shadow-red = 0.5;
+        fading = true;
+        sw-opti = true;
+      };
     };
     xserver = {
 
@@ -119,14 +130,80 @@
     };
   };
 
+  # -------------------------------------------------
+  # User Config ----------------------------------
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  # -------------------------------------------------
   users.users.nix = {
     isNormalUser = true;
     extraGroups =
       [ "wheel" "vboxusers" "networkmanager" ]; # Enable ‘sudo’ for the user.
+    shell = pkgs.zsh;
   };
 
-  fonts.fonts = with pkgs; [ iosevka ];
+  # -------------------------------------------------
+  # Font Config ----------------------------------
+  # -------------------------------------------------
+  fonts.fonts = with pkgs; [
+    iosevka
+    corefonts # Microsoft free fonts
+    fira # Monospace
+    inconsolata # Monospace
+    powerline-fonts
+    ubuntu_font_family
+    unifont # International languages
+  ];
+
+  # -------------------------------------------------
+  # Dropbox Config ----------------------------------
+  # -------------------------------------------------
+
+  networking.firewall = {
+    allowedTCPPorts = [ 17500 ];
+    allowedUDPPorts = [ 17500 ];
+  };
+
+  systemd.user.services.dropbox = {
+    description = "Dropbox";
+    wantedBy = [ "graphical-session.target" ];
+    environment = {
+      QT_PLUGIN_PATH = "/run/current-system/sw/"
+        + pkgs.qt5.qtbase.qtPluginPrefix;
+      QML2_IMPORT_PATH = "/run/current-system/sw/"
+        + pkgs.qt5.qtbase.qtQmlPrefix;
+    };
+
+    serviceConfig = {
+      ExecStart = "${pkgs.dropbox.out}/bin/dropbox";
+      ExecReload = "${pkgs.coreutils.out}/bin/kill -HUP $MAINPID";
+      KillMode = "control-group"; # upstream recommends process
+      Restart = "on-failure";
+      PrivateTmp = true;
+      ProtectSystem = "full";
+      Nice = 10;
+    };
+  };
+
+  # -------------------------------------------------
+  # ZSH Config ----------------------------------
+  # -------------------------------------------------
+  programs.zsh = {
+    enable = true;
+    shellAliases = {
+      #vim = "nvim";
+      sn = "shutdown now";
+    };
+    enableCompletion = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+    ohMyZsh = {
+      enable = true;
+      plugins = [ "git" "colored-man-pages" "command-not-found" "extract" ];
+      theme = "agnoster";
+    };
+
+    promptInit = "";
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
