@@ -27,7 +27,8 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 exec --no-startup-id nm-applet
 
 # Background Settings
-exec --no-startup-id feh --randomize --bg-scale /home/nix/.wallpapers/*
+# assert that feh starts after plasma-desktop is killed to set wallpapers properly
+exec --no-startup-id sleep 5 && feh --bg-fill $(shuf -n 1 -e /home/nix/.wallpapers/normal/*) --bg-fill $(shuf -n 1 -e /home/nix/.wallpapers/rotated/*)
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -107,26 +108,46 @@ bindsym $mod+semicolon split h
 # focus the child container
 #bindsym $mod+d focus child
 
-# -------------------------------------------
+
+# print screen (requires shutter)
+bindsym Print exec --no-startup-id shutter -s
+for_window [class=".shutter-wrapped"] floating enable
 
 
+
+# --------------------------------------------------------
 # KDE Settings -------------------------------------------
+# --------------------------------------------------------
 
-# Don’t treat Plasma pop-ups as full-sized windows
-for_window [class="plasmashell"] floating enable
+for_window [class="plasmashell" window_type="notification"] border none, move right 1500px, move down 600px
+
+# --------
+exec --no-startup-id wmctrl -c Plasma
+for_window [title="Desktop — Plasma"] kill; floating enable; border none
+# --------
 
 # Don’t spawn an empty window for the Plasma Desktop
-exec --no-startup-id sleep 5 && wmctrl -c Plasma for_window [title="Desktop — Plasma"] kill, floating enable, border none
-#exec --no-startup-id wmctrl -c Plasma
 #for_window [title="Desktop — Plasma"] kill, floating enable, border none
 
 # Don’t let notifications and non-interactive pop-up windows steal focus
-no_focus [class="plasmashell" window_type="notification"]
 no_focus [class="plasmashell" window_type="on_screen_display"]
+no_focus [class="plasmashell" window_type="notification"]
+
+for_window [class="plasmashell"] floating enable; border none
+
+for_window [class="Plasma"] floating enable; border none
+for_window [title="plasma-desktop"] floating enable; border none
+
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [class="Plasmoidviewer"] floating enable; border none
 
 
 
+
+# --------------------------------------------------------------
 # Workspace Settings -------------------------------------------
+# --------------------------------------------------------------
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
