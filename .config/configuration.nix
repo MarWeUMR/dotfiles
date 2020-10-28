@@ -1,6 +1,16 @@
 { config, lib, pkgs, ... }:
 
-{
+let
+  # Import unstable channel.
+  # Has to be done before using nixos-rebuild switch to work.
+  #
+  # sudo nix-channel --add http://nixos.org/channels/nixpkgs-unstable nixpkgs-unstable
+  # sudo nix-channel --update nixpkgs-unstable
+  unstable = import <nixpkgs-unstable> {
+    # reuse the current configuration. allows to use unfree stuff from unstable if set in configuration.nix.
+    config = config.nixpkgs.config;
+  };
+in {
 
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -41,8 +51,9 @@
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  # --------------------------------------------------------------------|
+  # Packages -----------------------------------------------------------|
+  # --------------------------------------------------------------------|
 
   environment.systemPackages = with pkgs; [
     wget
@@ -53,7 +64,7 @@
     alacritty
     google-chrome
     vscode
-    emacs
+    unstable.emacs
     ripgrep
     fd
     findutils
@@ -70,6 +81,8 @@
     dropbox-cli
     zsh
     oh-my-zsh
+    zsh-powerlevel10k
+    unstable.obsidian
   ];
 
   # Enable sound.
@@ -130,20 +143,21 @@
     };
   };
 
-  # -------------------------------------------------
-  # User Config ----------------------------------
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  # -------------------------------------------------
+  # --------------------------------------------------------------------|
+  # User Config --------------------------------------------------------|
+  # Define a user account. Don't forget to set a password with ‘passwd’.|
+  # --------------------------------------------------------------------|
   users.users.nix = {
     isNormalUser = true;
     extraGroups =
       [ "wheel" "vboxusers" "networkmanager" ]; # Enable ‘sudo’ for the user.
-    shell = pkgs.zsh;
+    shell = pkgs.zsh; # set default user shell
   };
 
-  # -------------------------------------------------
-  # Font Config ----------------------------------
-  # -------------------------------------------------
+  # -------------------------------------------------|
+  # Font Config -------------------------------------|
+  # -------------------------------------------------|
+
   fonts.fonts = with pkgs; [
     iosevka
     corefonts # Microsoft free fonts
@@ -199,7 +213,7 @@
     ohMyZsh = {
       enable = true;
       plugins = [ "git" "colored-man-pages" "command-not-found" "extract" ];
-      theme = "agnoster";
+      #theme = "powerlevel10k";
     };
 
     promptInit = "";
