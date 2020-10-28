@@ -34,7 +34,7 @@ background_opacity: 0.65
 
 font:
   normal:
-    family: "Iosevka"
+    family: "MesloLGS NF"
     style: Regular
   bold:
     family: "Iosevka"
@@ -48,6 +48,6 @@ font:
 
 
 # Point size
-  size: 16.0
+  size: 18.0
 
 live_config_reload: true
