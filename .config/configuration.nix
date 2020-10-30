@@ -64,9 +64,10 @@ in {
     alacritty
     google-chrome
     vscode
-    unstable.emacs
+    emacs
     ripgrep
     fd
+    fzf
     findutils
     tdesktop
     dmenu
@@ -83,6 +84,10 @@ in {
     oh-my-zsh
     zsh-powerlevel10k
     unstable.obsidian
+    unstable.antibody
+    exa
+    youtube-dl
+    kcalc
   ];
 
   # Enable sound.
@@ -206,6 +211,7 @@ in {
     shellAliases = {
       #vim = "nvim";
       sn = "shutdown now";
+      ls = "exa -la";
     };
     enableCompletion = true;
     autosuggestions.enable = true;
@@ -215,7 +221,15 @@ in {
       plugins = [ "git" "colored-man-pages" "command-not-found" "extract" ];
       #theme = "powerlevel10k";
     };
+    interactiveShellInit = ''
+      export ZSH=${pkgs.oh-my-zsh}/share/oh-my-zsh/
 
+      # Customize your oh-my-zsh options here
+      #ZSH_THEME="powerlevel10k"
+      plugins=(git docker)
+
+      source $ZSH/oh-my-zsh.sh
+    '';
     promptInit = "";
   };
 
