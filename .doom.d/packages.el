@@ -54,3 +54,4 @@
 (package! pdf-tools)
 (package! org-bullets)
 (package! beacon)
+(package! elpy)

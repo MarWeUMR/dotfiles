@@ -26,6 +26,7 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
 
+
 # Background Settings
 # assert that feh starts after plasma-desktop is killed to set wallpapers properly
 exec --no-startup-id sleep 5 && feh --bg-fill $(shuf -n 1 -e /home/nix/.wallpapers/normal/*) --bg-fill $(shuf -n 1 -e /home/nix/.wallpapers/rotated/*)
