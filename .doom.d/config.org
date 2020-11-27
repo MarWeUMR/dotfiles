@@ -31,8 +31,6 @@ clients, file templates and snippets.
 (setq user-full-name "John Doe"
       user-mail-address "john@doe.com")
 
-
-(setq yas-snippet-dirs '("~/.emacs.d/snippets"))
       #+END_SRC
 
 *** Which Key
@@ -84,6 +82,32 @@ Beacon Mode (Cursor blinking)
 #+END_SRC
 
 
+*** Font
+#+BEGIN_SRC elisp
+
+(
+ setq doom-variable-pitch-font (font-spec :family "Iosevka")
+ doom-big-font (font-spec :family "Iosevka" :size 24)
+ doom-serif-font (font-spec :family "Iosevka" :weight 'light)
+ )
+
+(after! doom-themes
+  (
+   setq doom-themes-enable-bold t
+   doom-themes-enable-italic t
+   )
+  )
+
+(global-font-lock-mode t)
+(setq font-lock-maximum-decoration t)
+
+
+(custom-set-faces!
+  '(font-lock-comment-face :slant italic)
+  '(font-lock-keyword-face :slant italic)
+  )
+#+END_SRC
+
 
 ** Line Numbering
 
@@ -134,18 +158,78 @@ font string. You generally only need these two:
 
 #+END_SRC
 
+
+** Garbage Collection
+
+#+begin_src elisp
+(setq gc-cons-threshold 100000)
+#+end_src
+
+
+** Treemacs
+#+BEGIN_SRC elisp
+
+(setq treemacs--width-is-locked nil
+                                        ;doom-themes-treemacs-theme "doom-colors"
+      )
+#+END_SRC
+
+
+* Yasnippet
+#+BEGIN_SRC elisp
+(setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+      #+END_SRC
+
+
+* LSP
 ** LSP Settings 
 
 #+begin_src elisp
-(setq lsp-ui-sideline-enable t
-      lsp-enable-completion-at-point nil)
+(after! lsp-mode
+  (setq
+   lsp-enable-completion-at-point nil
+   lsp-prefer-capf nil
+   lsp-enable-snippet t
+   ))
 
 
-(after! rustic
-  (setq rustic-format-on-save t)
-  (setq rustic-lsp-server 'rust-analyzer))
+;; (after! lsp-mode
+;;   :ensure t
+;;   :defer t
+;;                                         ;:hook ((lsp-mode . lsp-enable-which-key-integration))
+;;   :init ;;
+;;   ;; (setq lsp-auto-configure nil)
+;;   (setq lsp-prefer-capf nil)
+;;   (setq lsp-enable-snippet t)
+;;   (setq lsp-keymap-prefix "C-l")
+;;   (setq lsp-enable-completion-at-point t)
+;;   (setq lsp-keep-workspace-alive nil)
+;;   (setq lsp-enable-file-watchers nil)
+;;   (setq lsp-enable-semantic-highlighting nil)
+;;   (setq lsp-enable-symbol-highlighting nil)
+;;   (setq lsp-enable-text-document-color nil)
+;;   (setq lsp-enable-folding nil)
+;;   (setq lsp-enable-indentation nil)
+;;   (setq lsp-enable-on-type-formatting nil)
+;;   ;; (setq lsp-log-io t)
+;;   (add-hook 'lsp-completion-mode-hook (lambda ()
+;;                                         (when lsp-completion-mode
+;;                                           (set (make-local-variable 'company-backends)
+;;                                                (remq 'company-capf company-backends))))))
+;; :config (require 'lsp-clients))
 #+end_src
 
+
+
+*** Rust LSP
+
+#+begin_src elisp
+        
+(after! rustic
+  (setq rustic-format-on-save t)
+  (setq rustic-lsp-server 'rust-analyzer)
+  )
+#+end_src
 *** LSP in Source Code Blocks Within Org Mode
 #+begin_src elisp
 (cl-defmacro lsp-org-babel-enable (lang)
@@ -177,20 +261,6 @@ font string. You generally only need these two:
 (dolist (lang org-babel-lang-list)
   (eval `(lsp-org-babel-enable ,lang)))
 #+end_src
-
-** Garbage Collection
-
-#+begin_src elisp
-(setq gc-cons-threshold 100000)
-#+end_src
-
-
-
-** Treemacs
-#+BEGIN_SRC elisp
-
-(setq treemacs--width-is-locked nil)
-#+END_SRC
 
 
 * Org-Mode
@@ -250,15 +320,7 @@ Fontify code in code blocks
 
 #+END_SRC
 
-
-
-* Company
-
-
-#+BEGIN_SRC elisp
-#+END_SRC
-
-*** Org -> Latex Export Präambel
+** Org -> Latex Export Präambel
 
 My custom LaTeX class for Org-mode export. require is needed for it to work.
 #+BEGIN_SRC elisp
@@ -317,6 +379,93 @@ My custom LaTeX class for Org-mode export. require is needed for it to work.
                )))
 
 #+END_SRC
+
+
+* Company
+
+
+#+BEGIN_SRC elisp
+
+(require 'company)
+(global-company-mode) ; Turn on in all buffers
+(setq company-transformers '(company-sort-by-backend-importance)) ;; Should be sorted
+(setq company-idle-delay 0) ; default is 0.5
+(setq company-minimum-prefix-length 2) ; default is 4
+(setq company-selection-wrap-around t) ; When you reach the final, jump to the first
+(company-tng-configure-default)
+(setq completion-ignore-case t)
+(setq company-dabbrev-downcase nil)
+(after! company
+  (define-key company-active-map (kbd "C-p")  'company-select-previous)
+  (define-key company-active-map (kbd "C-n")  'company-select-next)
+  (define-key company-active-map (kbd "<return>")  'company-complete)
+  )
+
+                                        ;("C-n" . company-select-next)
+
+;; ;; yasnippet
+(defvar company-mode/enable-yas t
+  "Enable yasnippet for all backends.")
+(defun company-mode/backend-with-yas (backend)
+  (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+      backend
+    (append (if (consp backend) backend (list backend))
+            '(:with company-yasnippet))))
+(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+
+;; (require 'yasnippet)
+(add-to-list 'load-path "~/.doom.d/snippets")
+(yas-global-mode 1)
+
+
+(require 'company-auctex)
+(company-auctex-init)
+(require 'company-box)
+(add-hook 'company-mode-hook 'company-box-mode)
+
+                                        ;(setq company-backends '((company-yasnippet company-auctex )))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(setq company-box-icons-unknown 'fa_question_circle)
+
+(setq company-box-icons-elisp
+      '((fa_tag :face font-lock-function-name-face) ;; Function
+        (fa_cog :face font-lock-variable-name-face) ;; Variable
+        (fa_cube :face font-lock-constant-face) ;; Feature
+        (md_color_lens :face font-lock-doc-face))) ;; Face
+
+(setq company-box-icons-yasnippet 'fa_bookmark)
+
+(setq company-box-icons-lsp
+      '((1 . fa_text_height) ;; Text
+        (2 . (fa_tags :face font-lock-function-name-face)) ;; Method
+        (3 . (fa_tag :face font-lock-function-name-face)) ;; Function
+        (4 . (fa_tag :face font-lock-function-name-face)) ;; Constructor
+        (5 . (fa_cog :foreground "#FF9800")) ;; Field
+        (6 . (fa_cog :foreground "#FF9800")) ;; Variable
+        (7 . (fa_cube :foreground "#7C4DFF")) ;; Class
+        (8 . (fa_cube :foreground "#7C4DFF")) ;; Interface
+        (9 . (fa_cube :foreground "#7C4DFF")) ;; Module
+        (10 . (fa_cog :foreground "#FF9800")) ;; Property
+        (11 . md_settings_system_daydream) ;; Unit
+        (12 . (fa_cog :foreground "#FF9800")) ;; Value
+        (13 . (md_storage :face font-lock-type-face)) ;; Enum
+        (14 . (md_closed_caption :foreground "#009688")) ;; Keyword
+        (15 . md_closed_caption) ;; Snippet
+        (16 . (md_color_lens :face font-lock-doc-face)) ;; Color
+        (17 . fa_file_text_o) ;; File
+        (18 . md_refresh) ;; Reference
+        (19 . fa_folder_open) ;; Folder
+        (20 . (md_closed_caption :foreground "#009688")) ;; EnumMember
+        (21 . (fa_square :face font-lock-constant-face)) ;; Constant
+        (22 . (fa_cube :face font-lock-type-face)) ;; Struct
+        (23 . fa_calendar) ;; Event
+        (24 . fa_square_o) ;; Operator
+        (25 . fa_arrows)) ;; TypeParameter
+      )
+#+END_SRC
+
 
 
 * latex setup

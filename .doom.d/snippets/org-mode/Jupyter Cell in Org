@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: Jupyter Cell in Org
+# key: ipc
+# --
+
+#+BEGIN_SRC jupyter-python
+
+$0
+
+#+END_SRC

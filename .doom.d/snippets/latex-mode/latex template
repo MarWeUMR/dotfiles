@@ -1,0 +1,50 @@
+# -*- mode: snippet -*-
+# name: latex template
+# key: latex_template
+# --
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+
+\usepackage{amssymb,amsmath, amsthm, mathtools, mathrsfs}
+\usepackage{mathtools}
+\usepackage{witharrows}
+\usepackage{listings}             % Include the listings-package
+
+\usepackage{my_macros}
+
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{blkarray}
+\usepackage{esvect}
+\usepackage{bm}
+
+\usepackage{pstricks-add}
+
+\usepackage{geometry}
+\geometry{
+ a4paper,
+ left=10mm,
+ right=10mm,
+ bottom=10mm
+ }
+ \usepackage{gauss}
+
+%\chead{\underline{Grundlagen der höheren Mathematik}\\Tutorium 2\\Blatt 12}
+
+\usepackage{scrlayer-scrpage}
+\ohead{Weber, Marcus \\Matrikel-Nr.: 3231555}
+%\ihead{Grimm, Paul\\Matrikel-Nr.: 3203493}
+%\chead{Holzer, Yannik\\Matrikel-Nr.: 3218884 \\ \Large{Statistik}}
+
+\setlength\parindent{0pt}
+\renewcommand{\baselinestretch}{1.1}
+
+
+\begin{document}
+
+
+
+\end{document}

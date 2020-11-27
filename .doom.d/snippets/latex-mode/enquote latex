@@ -1,0 +1,4 @@
+# key: \en
+# name: enquote latex
+# --
+\enquote{$1} $0

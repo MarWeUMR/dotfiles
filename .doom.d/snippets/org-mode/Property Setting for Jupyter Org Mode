@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Property Setting for Jupyter Org Mode
+# key: orgprops
+# --
+#+PROPERTY: header-args :session py :kernel python3

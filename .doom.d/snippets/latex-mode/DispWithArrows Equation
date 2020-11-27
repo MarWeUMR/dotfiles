@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: DispWithArrows Equation
+# key: arrowEq
+# --
+\begin{DispWithArrows*}[wrap-lines, tikz = {align = flush left}, interline=1mm]
+$0
+\end{DispWithArrows*}
