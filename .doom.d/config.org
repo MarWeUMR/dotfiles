@@ -31,6 +31,7 @@ clients, file templates and snippets.
 (setq user-full-name "John Doe"
       user-mail-address "john@doe.com")
 
+(push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
       #+END_SRC
 
 *** Which Key

@@ -1,6 +1,8 @@
 (setq user-full-name "John Doe"
       user-mail-address "john@doe.com")
 
+(push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
+
 (after! which-key
   (setq which-key-idle-delay 0.1))
 
